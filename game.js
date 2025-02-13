@@ -30,57 +30,57 @@ const tetrominoes = {
       [0, 0, 0, 0],
       [1, 1, 1, 1],
       [0, 0, 0, 0],
-      [0, 0, 0, 0]
+      [0, 0, 0, 0],
     ],
-    color: 1
+    color: 1,
   },
   J: {
     shape: [
       [2, 0, 0],
       [2, 2, 2],
-      [0, 0, 0]
+      [0, 0, 0],
     ],
-    color: 2
+    color: 2,
   },
   L: {
     shape: [
       [0, 0, 3],
       [3, 3, 3],
-      [0, 0, 0]
+      [0, 0, 0],
     ],
-    color: 3
+    color: 3,
   },
   O: {
     shape: [
       [4, 4],
-      [4, 4]
+      [4, 4],
     ],
-    color: 4
+    color: 4,
   },
   S: {
     shape: [
       [0, 5, 5],
       [5, 5, 0],
-      [0, 0, 0]
+      [0, 0, 0],
     ],
-    color: 5
+    color: 5,
   },
   T: {
     shape: [
       [0, 6, 0],
       [6, 6, 6],
-      [0, 0, 0]
+      [0, 0, 0],
     ],
-    color: 6
+    color: 6,
   },
   Z: {
     shape: [
       [7, 7, 0],
       [0, 7, 7],
-      [0, 0, 0]
+      [0, 0, 0],
     ],
-    color: 7
-  }
+    color: 7,
+  },
 };
 
 /* randomly select a tetromino */
@@ -89,7 +89,7 @@ function randomTetromino() {
   const randKey = keys[Math.floor(Math.random() * keys.length)];
   const piece = tetrominoes[randKey];
   // clone the shape matrix to avoid modifying the original
-  const shape = piece.shape.map(row => row.slice());
+  const shape = piece.shape.map((row) => row.slice());
   return { shape: shape, color: piece.color };
 }
 
@@ -103,6 +103,7 @@ function spawnTetromino() {
   if (!isValidPosition(currentTetromino.shape, currentX, currentY)) {
     gameOver = true;
     cancelAnimationFrame(animationFrameId);
+    resetScore();
     alert("Game Over!");
   }
 }
@@ -142,23 +143,25 @@ function mergeTetromino() {
   }
 }
 function updateScore(amount) {
-  let currentScore = Number(document.getElementById('totalScore').innerHTML)
-  let updatedScore = currentScore + amount
-  document.getElementById('totalScore').innerHTML = updatedScore;
+  let currentScore = Number(document.getElementById("totalScore").innerHTML);
+  let updatedScore = currentScore + amount;
+  document.getElementById("totalScore").innerHTML = updatedScore;
 }
 /* clear full lines from the board */
 function clearLines() {
   for (let r = ROWS - 1; r >= 0; r--) {
     // if every cell in the row is filled (non-zero)
-    if (board[r].every(cell => cell !== 0)) {
+    if (board[r].every((cell) => cell !== 0)) {
       board.splice(r, 1); // remove the filled row
       board.unshift(new Array(COLS).fill(0)); // add an empty row at the top
-      r++;// re-check the same row index since board has shifted
-      updateScore(100); //update score - if line removed 
+      r++; // re-check the same row index since board has shifted
+      updateScore(100); //update score - if line removed
     }
   }
+}
 
-
+function resetScore() {
+  document.getElementById("totalScore").innerHTML = 0;
 }
 
 /* rotate a tetromino's matrix clockwise */
@@ -177,7 +180,13 @@ function rotate(matrix) {
 
 /* move current tetromino by a given offset; return true if movement is valid */
 function move(offsetX, offsetY) {
-  if (isValidPosition(currentTetromino.shape, currentX + offsetX, currentY + offsetY)) {
+  if (
+    isValidPosition(
+      currentTetromino.shape,
+      currentX + offsetX,
+      currentY + offsetY
+    )
+  ) {
     currentX += offsetX;
     currentY += offsetY;
     return true;
@@ -212,8 +221,23 @@ function update(time = 0) {
   }
 }
 
+function waitForVar() {
+  const interval = setInterval(() => {
+    if (Number(document.getElementById("totalScore").innerHTML) === 200) {
+      updateSpeed();
+    }
+  }, 100);
+}
+
+waitForVar();
+
+function updateSpeed() {
+  dropInterval = 200;
+}
+
 /* start the game on clicking the start button */
 document.getElementById("startButton").addEventListener("click", () => {
+  resetScore();
   gameOver = false;
   createBoard();
   spawnTetromino();
