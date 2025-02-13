@@ -141,7 +141,11 @@ function mergeTetromino() {
     }
   }
 }
-
+function updateScore(amount) {
+  let currentScore = Number(document.getElementById('totalScore').innerHTML)
+  let updatedScore = currentScore + amount
+  document.getElementById('totalScore').innerHTML = updatedScore;
+}
 /* clear full lines from the board */
 function clearLines() {
   for (let r = ROWS - 1; r >= 0; r--) {
@@ -149,9 +153,12 @@ function clearLines() {
     if (board[r].every(cell => cell !== 0)) {
       board.splice(r, 1); // remove the filled row
       board.unshift(new Array(COLS).fill(0)); // add an empty row at the top
-      r++; // re-check the same row index since board has shifted
+      r++;// re-check the same row index since board has shifted
+      updateScore(100); //update score - if line removed 
     }
   }
+
+
 }
 
 /* rotate a tetromino's matrix clockwise */
