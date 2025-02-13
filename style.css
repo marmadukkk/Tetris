@@ -1,0 +1,84 @@
+/* Общий стиль (General Styles) */
+body {
+  background: #f0f0f0;
+  /* light gray background */
+  font-family: sans-serif;
+  /* use a generic sans-serif font */
+  text-align: center;
+  /* center align text globally */
+  margin: 0;
+  /* remove default margin */
+  padding: 0;
+  /* remove default padding */
+}
+
+.container {
+  display: flex;
+  /* use flexbox layout */
+  justify-content: center;
+  /* center content horizontally */
+  margin: 20px auto;
+  /* vertical margin with auto horizontal margins */
+  max-width: 320px;
+  /* limit maximum width of container */
+}
+
+/* game board styled as a 10x20 grid with each cell 30px wide/tall */
+.game-board {
+  display: grid;
+  /* use CSS grid for layout */
+  grid-template-columns: repeat(10, 30px);
+  /* create 10 columns of 30px */
+  grid-template-rows: repeat(20, 30px);
+  /* create 20 rows of 30px */
+  gap: 1px;
+  /* small gap between cells */
+  background: #333;
+  /* dark background for grid lines */
+}
+
+/* Basic Cell Style */
+.cell {
+  width: 30px;
+  /* fixed width */
+  height: 30px;
+  /* fixed height */
+  background: #fff;
+  /* default background as white */
+}
+
+/* (Color classes for tetrominos) */
+/* color-1 corresponds to Tetromino I – cyan */
+.color-1 {
+  background: cyan;
+}
+
+/* color-2 corresponds to Tetromino J – blue */
+.color-2 {
+  background: blue;
+}
+
+/* color-3 corresponds to Tetromino L – orange */
+.color-3 {
+  background: orange;
+}
+
+/* color-4 corresponds to Tetromino O – yellow */
+.color-4 {
+  background: yellow;
+}
+
+/* color-5 corresponds to Tetromino S – green */
+.color-5 {
+  background: green;
+}
+
+/* color-6 corresponds to Tetromino T – purple */
+.color-6 {
+  background: purple;
+}
+
+/* color-7 corresponds to Tetromino Z – red */
+.color-7 {
+  background: red;
+}
