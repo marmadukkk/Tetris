@@ -1,4 +1,4 @@
-# Tetris Game
+# Tetris Game 🟥
 
 A simple Tetris game implemented using JS, HTML, and CSS.
 
