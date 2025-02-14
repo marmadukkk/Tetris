@@ -97,16 +97,38 @@ function randomTetromino() {
 function spawnTetromino() {
   currentTetromino = randomTetromino();
   currentY = 0;
-  // center the tetromino horizontally on the board
   currentX = Math.floor((COLS - currentTetromino.shape[0].length) / 2);
-  // if the tetromino cannot be placed at the starting position then end game
   if (!isValidPosition(currentTetromino.shape, currentX, currentY)) {
     gameOver = true;
     cancelAnimationFrame(animationFrameId);
     resetScore();
-    alert("Game Over!");
+    showGameOverPopup(); // Показываем pop-up при проигрыше
   }
 }
+
+function showGameOverPopup() {
+  const popup = document.getElementById("gameOverPopup");
+  const finalScore = document.getElementById("finalScore");
+  finalScore.textContent = document.getElementById("totalScore").textContent;
+  popup.style.display = "flex";
+}
+
+function hideGameOverPopup() {
+  const popup = document.getElementById("gameOverPopup");
+  popup.style.display = "none";
+}
+
+// Добавьте обработчик для кнопки Restart
+document.getElementById("restartButton").addEventListener("click", () => {
+  hideGameOverPopup();
+  resetScore();
+  gameOver = false;
+  createBoard();
+  spawnTetromino();
+  lastTime = 0;
+  dropCounter = 0;
+  update();
+});
 
 /* check if tetromino can be placed at given offset */
 /* this is a simple collision detection and boundary check */
