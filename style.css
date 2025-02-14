@@ -184,3 +184,45 @@ h3{
     2px 2px 0 rgba(0, 0, 0, 0.2),
     4px 4px 0 rgba(0, 0, 0, 0.1);
 }
+
+/* Pop-up Styles */
+.popup {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.popup-content h2 {
+  margin-bottom: 20px;
+}
+
+.popup-content button {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 20px;
+  padding: 10px 20px;
+  background: #8b8b8b;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.popup-content button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #000;
+}
