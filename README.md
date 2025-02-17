@@ -4,7 +4,7 @@ A simple Tetris game implemented using JS, HTML, and CSS.
 
 ## Files
 
-- **index.html** — just a main.html
+- **index.html** — main html file
 - **style.css** — styles
 - **game.js** — Core game logic (tetromino generation, movement, moves possibility checking, etc.).
 - **controls.js** — handle keyboard input
