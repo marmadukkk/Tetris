@@ -1,29 +1,29 @@
-// game.js — Main game logic
+// game.js — Основная логика игры
 
-const ROWS = 20; // number of rows on the board
-const COLS = 10; // number of columns on the board
-let board = []; // game board as a 2D array
-let currentTetromino = null; // current falling tetromino
-let currentX = 0; // current x position of tetromino on board
-let currentY = 0; // current y position of tetromino on board
-let dropInterval = 500; // drop interval in milliseconds
-let dropCounter = 0; // counter to track drop timing
-let lastTime = 0; // last update time (for delta calculation)
-let animationFrameId; // id for animation frame, for canceling if needed
-let gameOver = false; // flag to indicate if the game is over
+const ROWS = 20; // количество строк на игровом поле
+const COLS = 10; // количество столбцов на игровом поле
+let board = []; // игровое поле в виде двумерного массива
+let currentTetromino = null; // текущая падающая тетромино
+let currentX = 0; // текущая позиция тетромино по оси X на поле
+let currentY = 0; // текущая позиция тетромино по оси Y на поле
+let dropInterval = 500; // интервал падения в миллисекундах
+let dropCounter = 0; // счетчик для отслеживания времени падения
+let lastTime = 0; // время последнего обновления (для расчета дельты)
+let animationFrameId; // идентификатор анимационного кадра, для отмены при необходимости
+let gameOver = false; // флаг, указывающий, завершена ли игра
 
-/* create an empty board */
+/* Создание пустого игрового поля */
 function createBoard() {
   board = [];
   for (let r = 0; r < ROWS; r++) {
     board[r] = [];
     for (let c = 0; c < COLS; c++) {
-      board[r][c] = 0; // 0 means empty cell
+      board[r][c] = 0; // 0 означает пустую ячейку
     }
   }
 }
 
-/* define tetrominoes including their shapes and color codes */
+/* Определение тетромино, включая их формы и цветовые коды */
 const tetrominoes = {
   I: {
     shape: [
@@ -83,17 +83,17 @@ const tetrominoes = {
   },
 };
 
-/* randomly select a tetromino */
+/* Случайный выбор тетромино */
 function randomTetromino() {
   const keys = Object.keys(tetrominoes);
   const randKey = keys[Math.floor(Math.random() * keys.length)];
   const piece = tetrominoes[randKey];
-  // clone the shape matrix to avoid modifying the original
+  // клонируем матрицу формы, чтобы избежать изменения оригинала
   const shape = piece.shape.map((row) => row.slice());
   return { shape: shape, color: piece.color };
 }
 
-/* spawn a new tetromino */
+/* Появление новой тетромино */
 function spawnTetromino() {
   currentTetromino = randomTetromino();
   currentY = 0;
@@ -106,6 +106,7 @@ function spawnTetromino() {
   }
 }
 
+/* Показ pop-up окна при завершении игры */
 function showGameOverPopup() {
   const popup = document.getElementById("gameOverPopup");
   const finalScore = document.getElementById("finalScore");
@@ -113,12 +114,13 @@ function showGameOverPopup() {
   popup.style.display = "flex";
 }
 
+/* Скрытие pop-up окна */
 function hideGameOverPopup() {
   const popup = document.getElementById("gameOverPopup");
   popup.style.display = "none";
 }
 
-// Добавьте обработчик для кнопки Restart
+// Добавление обработчика для кнопки Restart
 document.getElementById("restartButton").addEventListener("click", () => {
   hideGameOverPopup();
   resetScore();
@@ -130,19 +132,19 @@ document.getElementById("restartButton").addEventListener("click", () => {
   update();
 });
 
-/* check if tetromino can be placed at given offset */
-/* this is a simple collision detection and boundary check */
+/* Проверка, может ли тетромино быть размещено с заданным смещением */
+/* Это простая проверка на столкновения и границы */
 function isValidPosition(shape, offsetX, offsetY) {
   for (let r = 0; r < shape.length; r++) {
     for (let c = 0; c < shape[r].length; c++) {
       if (shape[r][c] !== 0) {
         const newX = offsetX + c;
         const newY = offsetY + r;
-        // check left, right and bottom boundaries
+        // проверка левой, правой и нижней границ
         if (newX < 0 || newX >= COLS || newY >= ROWS) {
           return false;
         }
-        // check for collisions with settled tetrominoes; newY can be negative at spawn
+        // проверка на столкновения с установленными тетромино; newY может быть отрицательным при появлении
         if (newY >= 0 && board[newY][newX] !== 0) {
           return false;
         }
@@ -152,55 +154,59 @@ function isValidPosition(shape, offsetX, offsetY) {
   return true;
 }
 
-/* merge the current tetromino into the board */
+/* Объединение текущей тетромино с игровым полем */
 function mergeTetromino() {
   const shape = currentTetromino.shape;
   for (let r = 0; r < shape.length; r++) {
     for (let c = 0; c < shape[r].length; c++) {
       if (shape[r][c] !== 0) {
-        // assign the tetromino's color to the board cell
+        // присваиваем ячейке поля цвет тетромино
         board[currentY + r][currentX + c] = currentTetromino.color;
       }
     }
   }
 }
+
+/* Обновление счета */
 function updateScore(amount) {
   let currentScore = Number(document.getElementById("totalScore").innerHTML);
   let updatedScore = currentScore + amount;
   document.getElementById("totalScore").innerHTML = updatedScore;
 }
-/* clear full lines from the board */
+
+/* Очистка заполненных линий на поле */
 function clearLines() {
   for (let r = ROWS - 1; r >= 0; r--) {
-    // if every cell in the row is filled (non-zero)
+    // если каждая ячейка в строке заполнена (не равна нулю)
     if (board[r].every((cell) => cell !== 0)) {
-      board.splice(r, 1); // remove the filled row
-      board.unshift(new Array(COLS).fill(0)); // add an empty row at the top
-      r++; // re-check the same row index since board has shifted
-      updateScore(100); //update score - if line removed
+      board.splice(r, 1); // удаляем заполненную строку
+      board.unshift(new Array(COLS).fill(0)); // добавляем пустую строку вверху
+      r++; // повторно проверяем тот же индекс строки, так как поле сместилось
+      updateScore(100); // обновляем счет, если линия удалена
     }
   }
 }
 
+/* Сброс счета */
 function resetScore() {
   document.getElementById("totalScore").innerHTML = 0;
 }
 
-/* rotate a tetromino's matrix clockwise */
+/* Поворот матрицы тетромино по часовой стрелке */
 function rotate(matrix) {
   const N = matrix.length;
   const result = [];
   for (let i = 0; i < N; i++) {
     result[i] = [];
     for (let j = 0; j < N; j++) {
-      // rotate element from bottom-left position to top-right position
+      // поворачиваем элемент из нижнего левого положения в верхнее правое
       result[i][j] = matrix[N - j - 1][i];
     }
   }
   return result;
 }
 
-/* move current tetromino by a given offset; return true if movement is valid */
+/* Перемещение текущей тетромино на заданное смещение; возвращает true, если движение допустимо */
 function move(offsetX, offsetY) {
   if (
     isValidPosition(
@@ -216,33 +222,34 @@ function move(offsetX, offsetY) {
   return false;
 }
 
-/* drop the current tetromino one step down */
-/* if tetromino cannot move down further then merge it into board */
+/* Падение текущей тетромино на одну клетку вниз */
+/* Если тетромино не может двигаться дальше вниз, то объединяем ее с полем */
 function drop() {
   if (!move(0, 1)) {
     mergeTetromino();
     clearLines();
     spawnTetromino();
   }
-  dropCounter = 0; // reset drop counter after a drop
+  dropCounter = 0; // сбрасываем счетчик падения после падения
 }
 
-/* main game loop using requestAnimationFrame */
-/* it updates game state and redraws board at each frame */
+/* Основной игровой цикл с использованием requestAnimationFrame */
+/* Обновляет состояние игры и перерисовывает поле на каждом кадре */
 function update(time = 0) {
-  const deltaTime = time - lastTime; // calculate time elapsed since last frame
+  const deltaTime = time - lastTime; // рассчитываем время, прошедшее с последнего кадра
   lastTime = time;
   dropCounter += deltaTime;
-  // drop tetromino if accumulated time exceeds interval
+  // падение тетромино, если накопленное время превышает интервал
   if (dropCounter > dropInterval) {
     drop();
   }
-  drawBoard(); // draw the board; function defined in render.js
+  drawBoard(); // отрисовка поля; функция определена в render.js
   if (!gameOver) {
     animationFrameId = requestAnimationFrame(update);
   }
 }
 
+/* Ожидание изменения переменной */
 function waitForVar() {
   const interval = setInterval(() => {
     if (Number(document.getElementById("totalScore").innerHTML) === 200) {
@@ -253,11 +260,12 @@ function waitForVar() {
 
 waitForVar();
 
+/* Обновление скорости падения */
 function updateSpeed() {
   dropInterval = 200;
 }
 
-/* start the game on clicking the start button */
+/* Начало игры при нажатии на кнопку Start */
 document.getElementById("startButton").addEventListener("click", () => {
   resetScore();
   gameOver = false;
@@ -265,5 +273,5 @@ document.getElementById("startButton").addEventListener("click", () => {
   spawnTetromino();
   lastTime = 0;
   dropCounter = 0;
-  update(); // begin the game loop
+  update(); // начинаем игровой цикл
 });
